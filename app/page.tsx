@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 
 function buildSignature(name: string, position: string, phone: string, email: string, imageUrl: string) {
   const imgTag = imageUrl
@@ -41,6 +41,9 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [image, setImage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const sig = buildSignature(
     name || "YOUR_NAME",
@@ -49,6 +52,25 @@ export default function Home() {
     email || "YOUR_EMAIL_ADDRESS",
     image
   );
+
+  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadError("");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!res.ok) throw new Error("업로드 실패");
+      const { url } = await res.json();
+      setImage(url);
+    } catch {
+      setUploadError("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setUploading(false);
+    }
+  }, []);
 
   const copySignature = useCallback(() => {
     const area = document.getElementById("preview-area");
@@ -81,6 +103,12 @@ export default function Home() {
         .form-row input:focus { border-color: #6D319D; }
         .form-row input::placeholder { color: #D4D4D8; }
         .form-row .hint { font-size: 11px; color: #aaa; margin-top: 4px; }
+        .upload-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: #6D319D; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-family: Arial, sans-serif; cursor: pointer; transition: background 0.2s; }
+        .upload-btn:hover:not(:disabled) { background: #5a2885; }
+        .upload-btn:disabled { background: #b39dce; cursor: not-allowed; }
+        .upload-preview { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+        .upload-preview img { width: 60px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+        .upload-error { font-size: 11px; color: #e53e3e; margin-top: 4px; }
         .preview-box { background: #fff; border-radius: 10px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
         .preview-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
         .preview-header h3 { margin: 0; font-size: 18px; color: #181818; }
@@ -115,9 +143,37 @@ export default function Home() {
             <input type="text" placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)} />
           </div>
           <div className="form-row">
-            <label>이미지 URL</label>
-            <input type="text" placeholder="https://..." value={image} onChange={e => setImage(e.target.value)} />
-            <div className="hint">Google Drive, Imgur 등에 이미지를 올리고 공개 링크를 붙여넣으세요.</div>
+            <label>프로필 이미지</label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleImageUpload}
+            />
+            <button
+              className="upload-btn"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+            >
+              {uploading ? (
+                <>업로드 중...</>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 0L8 8m4-4l4 4" />
+                  </svg>
+                  이미지 업로드
+                </>
+              )}
+            </button>
+            {image && !uploading && (
+              <div className="upload-preview">
+                <img src={image} alt="미리보기" />
+                <span style={{ fontSize: "11px", color: "#666" }}>업로드 완료</span>
+              </div>
+            )}
+            {uploadError && <div className="upload-error">{uploadError}</div>}
           </div>
         </div>
 
