@@ -53,23 +53,21 @@ export default function Home() {
     image
   );
 
-  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
     setUploadError("");
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
-      if (!res.ok) throw new Error("업로드 실패");
-      const { url } = await res.json();
-      setImage(url);
-    } catch {
-      setUploadError("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
-    } finally {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(reader.result as string);
       setUploading(false);
-    }
+    };
+    reader.onerror = () => {
+      setUploadError("이미지를 읽는 데 실패했습니다. 다시 시도해주세요.");
+      setUploading(false);
+    };
+    reader.readAsDataURL(file);
   }, []);
 
   const copySignature = useCallback(() => {
