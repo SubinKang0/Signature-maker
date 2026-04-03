@@ -1,0 +1,7 @@
+{
+  "tool_name": "mcp__apphub__deploy_app",
+  "tool_input_preview": "{\"app_slug\":\"app-3\",\"branch\":\"main\"}",
+  "error": "MCP server \"apphub\" requires re-authorization (token expired)",
+  "timestamp": "2026-04-03T01:23:43.052Z",
+  "retry_count": 1
+}

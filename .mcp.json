@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "apphub": {
+      "type": "http",
+      "url": "https://hub.jocodingax.ai/mcp",
+      "headers": {
+        "X-Api-Key": "apphub_ak_f6e8b4bce58c800eba1bc1a8fd0b1b30f2d7f16ed7aee1c3"
+      }
+    }
+  }
+}

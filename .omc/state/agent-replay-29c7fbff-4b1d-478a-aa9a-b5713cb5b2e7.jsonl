@@ -1,0 +1,8 @@
+{"t":0,"agent":"ac9476c","agent_type":"explore","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"af0409c","agent_type":"explore","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"af0409c","agent_type":"explore","event":"agent_stop","success":true,"duration_ms":15358}
+{"t":0,"agent":"ac9476c","agent_type":"explore","event":"agent_stop","success":true,"duration_ms":28873}
+{"t":0,"agent":"a481393","agent_type":"tracer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a3126b0","agent_type":"document-specialist","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a3126b0","agent_type":"document-specialist","event":"agent_stop","success":true,"duration_ms":69667}
+{"t":0,"agent":"system","event":"skill_invoked","skill_name":"vercel-plugin:deploy"}
